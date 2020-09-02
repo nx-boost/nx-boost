@@ -1,6 +1,78 @@
 {
   "version": 1,
-  "projects": {},
+  "projects": {
+    "workspace": {
+      "root": "packages/workspace",
+      "sourceRoot": "packages/workspace/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "tsConfig": [
+              "packages/workspace/tsconfig.lib.json",
+              "packages/workspace/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!packages/workspace/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "packages/workspace/jest.config.js",
+            "tsConfig": "packages/workspace/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/packages/workspace",
+            "tsConfig": "packages/workspace/tsconfig.lib.json",
+            "packageJson": "packages/workspace/package.json",
+            "main": "packages/workspace/src/index.ts",
+            "assets": [
+              "packages/workspace/*.md",
+              {
+                "input": "./packages/workspace/src",
+                "glob": "**/*.!(ts)",
+                "output": "./src"
+              },
+              {
+                "input": "./packages/workspace",
+                "glob": "collection.json",
+                "output": "."
+              },
+              {
+                "input": "./packages/workspace",
+                "glob": "builders.json",
+                "output": "."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "workspace-e2e": {
+      "projectType": "application",
+      "root": "e2e/workspace-e2e",
+      "sourceRoot": "e2e/workspace-e2e/src",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/nx-plugin:e2e",
+          "options": {
+            "target": "workspace:build",
+            "npmPackageName": "@nx-boost/workspace",
+            "pluginOutputPath": "dist/packages/workspace",
+            "jestConfig": "e2e/workspace-e2e/jest.config.js",
+            "tsSpecConfig": "e2e/workspace-e2e/tsconfig.spec.json"
+          }
+        }
+      }
+    }
+  },
   "cli": {
     "defaultCollection": "@nrwl/workspace"
   }

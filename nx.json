@@ -21,9 +21,17 @@
       }
     }
   },
-  "projects": {},
+  "projects": {
+    "workspace": {
+      "tags": []
+    },
+    "workspace-e2e": {
+      "tags": [],
+      "implicitDependencies": ["workspace"]
+    }
+  },
   "workspaceLayout": {
-    "appsDir": "packages",
+    "appsDir": "e2e",
     "libsDir": "packages"
   }
 }

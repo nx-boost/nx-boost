@@ -15,7 +15,9 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@nx-boost/workspace": ["packages/workspace/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
