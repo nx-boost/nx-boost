@@ -5,6 +5,11 @@
       "implementation": "./src/builders/build/builder",
       "schema": "./src/builders/build/schema.json",
       "description": "build builder"
+    },
+    "publish": {
+      "implementation": "./src/builders/publish/builder",
+      "schema": "./src/builders/publish/schema.json",
+      "description": "Builder to publish an npm package."
     }
   }
 }
