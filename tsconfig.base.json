@@ -18,7 +18,8 @@
     "strict": true,
     "noImplicitAny": true,
     "paths": {
-      "@nx-boost/workspace": ["packages/workspace/src/index.ts"]
+      "@nx-boost/workspace": ["packages/workspace/src/index.ts"],
+      "@nx-boost/purge-css": ["packages/purge-css/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

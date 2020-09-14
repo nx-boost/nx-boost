@@ -28,6 +28,13 @@
     "workspace-e2e": {
       "tags": [],
       "implicitDependencies": ["workspace"]
+    },
+    "purge-css": {
+      "tags": []
+    },
+    "purge-css-e2e": {
+      "tags": [],
+      "implicitDependencies": ["purge-css"]
     }
   },
   "workspaceLayout": {

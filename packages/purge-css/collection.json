@@ -1,0 +1,12 @@
+{
+  "$schema": "../../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "name": "purge-css",
+  "version": "0.0.1",
+  "schematics": {
+    "purge-css": {
+      "factory": "./src/schematics/purge-css/schematic",
+      "schema": "./src/schematics/purge-css/schema.json",
+      "description": "purge-css schematic"
+    }
+  }
+}
