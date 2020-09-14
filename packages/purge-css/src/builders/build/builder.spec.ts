@@ -2,7 +2,7 @@ import { Architect } from '@angular-devkit/architect';
 import { TestingArchitectHost } from '@angular-devkit/architect/testing';
 import { schema } from '@angular-devkit/core';
 import { join } from 'path';
-import { BuildBuilderSchema } from './schema';
+import { BuildBuilderSchema, UserDefinedOptions } from './schema';
 
 jest.mock('purgecss');
 import { PurgeCSS } from 'purgecss';
@@ -53,6 +53,33 @@ describe('Command Runner Builder', () => {
           join(root, options.outputPath, '**/*.html'),
           join(root, options.outputPath, '**/*.js'),
         ]),
+      })
+    );
+  });
+
+  it('should use the custom options', async () => {
+    const customOptions: UserDefinedOptions = {
+      css: ['a.css', 'b.css'],
+      content: ['**/*.vue'],
+      variables: true,
+    };
+    const run = await architect.scheduleBuilder('@nx-boost/purge-css:build', {
+      ...options,
+      options: customOptions,
+    } as BuildBuilderSchema);
+
+    const output = await run.result;
+
+    await run.stop();
+
+    const joinFn = (value: string) => join(root, options.outputPath, value);
+
+    expect(output.success).toBe(true);
+    expect(purgeMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ...customOptions,
+        css: expect.arrayContaining(customOptions.css.map(joinFn)),
+        content: expect.arrayContaining(customOptions.content.map(joinFn)),
       })
     );
   });

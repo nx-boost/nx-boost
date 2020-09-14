@@ -16,11 +16,11 @@ function getOptions(
   const joinPath = (value: string) => join(path, value);
 
   return {
-    ...schema?.options,
+    ...schema.options,
     content:
-      schema?.options?.content?.map(joinPath) ||
+      schema.options?.content?.map(joinPath) ||
       ['**/*.html', '**/*.js'].map(joinPath),
-    css: schema?.options?.css?.map(joinPath) || ['**/*.css'].map(joinPath),
+    css: schema.options?.css?.map(joinPath) || ['**/*.css'].map(joinPath),
   };
 }
 
