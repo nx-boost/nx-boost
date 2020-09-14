@@ -5,16 +5,36 @@ import {
 } from '@angular-devkit/architect';
 import { from, Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { BuildBuilderSchema } from './schema';
+import { BuildBuilderSchema, UserDefinedOptions } from './schema';
 import { PurgeCSS } from 'purgecss';
+import { Path, join } from '@angular-devkit/core';
+
+function getOptions(
+  schema: BuildBuilderSchema,
+  path: Path
+): UserDefinedOptions {
+  const joinPath = (value: string) => join(path, value);
+
+  return {
+    ...schema?.options,
+    content:
+      schema?.options?.content?.map(joinPath) ||
+      ['**/*.html', '**/*.js'].map(joinPath),
+    css: schema?.options?.css?.map(joinPath) || ['**/*.css'].map(joinPath),
+  };
+}
 
 export function runBuilder(
-  _: BuildBuilderSchema,
-  __: BuilderContext
+  schema: BuildBuilderSchema,
+  context: BuilderContext
 ): Observable<BuilderOutput> {
-  return from(new PurgeCSS().purge(undefined)).pipe(
+  return from(
+    new PurgeCSS().purge(
+      getOptions(schema, join(context.workspaceRoot as Path, schema.outputPath))
+    )
+  ).pipe(
     map((_) => ({ success: true })),
-    catchError((err) => of({ success: false, error: err?.toString() }))
+    catchError((err) => of({ success: false, error: err.toString() }))
   );
 }
 

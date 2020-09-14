@@ -8,26 +8,32 @@ jest.mock('purgecss');
 import { PurgeCSS } from 'purgecss';
 
 const options: BuildBuilderSchema = {
-  outputDir: 'test',
+  outputPath: 'test',
 };
+
+const root = '/root';
 
 describe('Command Runner Builder', () => {
   let architect: Architect;
   let architectHost: TestingArchitectHost;
+  let purgeMock: jest.Mock<
+    ReturnType<typeof PurgeCSS.prototype.purge>,
+    Parameters<typeof PurgeCSS.prototype.purge>
+  >;
 
   beforeEach(async () => {
     const registry = new schema.CoreSchemaRegistry();
     registry.addPostTransform(schema.transforms.addUndefinedDefaults);
 
-    architectHost = new TestingArchitectHost('/root', '/root');
+    architectHost = new TestingArchitectHost(root, root);
     architect = new Architect(architectHost, registry);
-    const purgeMock = jest.fn().mockResolvedValue([]);
+    purgeMock = jest.fn().mockResolvedValue([]);
     PurgeCSS.prototype.purge = purgeMock;
 
     await architectHost.addBuilderFromPackage(join(__dirname, '../../..'));
   });
 
-  it('can run', async () => {
+  it('should use the default options', async () => {
     const run = await architect.scheduleBuilder(
       '@nx-boost/purge-css:build',
       options
@@ -38,6 +44,17 @@ describe('Command Runner Builder', () => {
     await run.stop();
 
     expect(output.success).toBe(true);
+    expect(purgeMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        css: expect.arrayContaining([
+          join(root, options.outputPath, '**/*.css'),
+        ]),
+        content: expect.arrayContaining([
+          join(root, options.outputPath, '**/*.html'),
+          join(root, options.outputPath, '**/*.js'),
+        ]),
+      })
+    );
   });
 
   it('should fail', async () => {
