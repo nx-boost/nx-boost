@@ -4,7 +4,12 @@ import { schema } from '@angular-devkit/core';
 import { join } from 'path';
 import { BuildBuilderSchema } from './schema';
 
-const options: BuildBuilderSchema = {};
+jest.mock('purgecss');
+import { PurgeCSS } from 'purgecss';
+
+const options: BuildBuilderSchema = {
+  outputDir: 'test',
+};
 
 describe('Command Runner Builder', () => {
   let architect: Architect;
@@ -16,27 +21,39 @@ describe('Command Runner Builder', () => {
 
     architectHost = new TestingArchitectHost('/root', '/root');
     architect = new Architect(architectHost, registry);
+    const purgeMock = jest.fn().mockResolvedValue([]);
+    PurgeCSS.prototype.purge = purgeMock;
 
-    // This will either take a Node package name, or a path to the directory
-    // for the package.json file.
     await architectHost.addBuilderFromPackage(join(__dirname, '../../..'));
   });
 
   it('can run', async () => {
-    // A "run" can have multiple outputs, and contains progress information.
     const run = await architect.scheduleBuilder(
       '@nx-boost/purge-css:build',
       options
     );
-    // The "result" member (of type BuilderOutput) is the next output.
+
     const output = await run.result;
 
-    // Stop the builder from running. This stops Architect from keeping
-    // the builder-associated states in memory, since builders keep waiting
-    // to be scheduled.
     await run.stop();
 
-    // Expect that it succeeded.
     expect(output.success).toBe(true);
+  });
+
+  it('should fail', async () => {
+    const error = new Error('test');
+    PurgeCSS.prototype.purge = jest.fn().mockRejectedValueOnce(error);
+
+    const run = await architect.scheduleBuilder(
+      '@nx-boost/purge-css:build',
+      options
+    );
+
+    const output = await run.result;
+
+    await run.stop();
+
+    expect(output.success).toBe(false);
+    expect(output.error).toEqual(error.toString());
   });
 });

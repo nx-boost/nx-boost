@@ -3,18 +3,18 @@ import {
   BuilderOutput,
   createBuilder,
 } from '@angular-devkit/architect';
-import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { from, Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { BuildBuilderSchema } from './schema';
+import { PurgeCSS } from 'purgecss';
 
 export function runBuilder(
-  options: BuildBuilderSchema,
-  context: BuilderContext
+  _: BuildBuilderSchema,
+  __: BuilderContext
 ): Observable<BuilderOutput> {
-  return of({ success: true }).pipe(
-    tap(() => {
-      context.logger.info('Builder ran for build');
-    })
+  return from(new PurgeCSS().purge(undefined)).pipe(
+    map((_) => ({ success: true })),
+    catchError((err) => of({ success: false, error: err?.toString() }))
   );
 }
 

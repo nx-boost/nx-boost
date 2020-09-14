@@ -27,8 +27,8 @@
   },
   "private": true,
   "dependencies": {
-    "@angular-devkit/architect": "^0.1001.0",
-    "@nx-boost/workspace": "0.0.1-test9",
+    "@angular-devkit/architect": "^0.1001.1",
+    "purgecss": "^2.3.0",
     "rxjs": "^6.6.2"
   },
   "devDependencies": {
